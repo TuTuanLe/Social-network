@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="infomation" style="width:80% ;margin-left:10%; margin-top: 20px;">
+    <span class="titleContact"> Contacts</span>
+    <div class="inf">
+         <i class="plus square outline icon large" style="color: red;" ></i>
+    </div>
+    <div class="inf">
+         <i class="search outline icon large" ></i>
+    </div>
+    <div class="inf">
+         <i class="code outline icon large" style="color: green;" ></i>
+    </div>
+   
+ </div>
+ <hr class="rightbarHr" style="width:80% ;margin-left:10%"/>
+  
+{% for i in lsProfile %}
+<li class="rightbarFriend" style="width:80% ;margin-left:5%">
+    <div class="rightbarProfileImgContainer">
+       <img 
+       class="rightProfileImg"
+          src="{{i.avatar.url}}"
+          alt=""
+       />
+       <span class="rightbarOnline"></span>
+    </div>
+    
+    <form class="" id="post-form" method="POST" action="checkview" style="float: left;">
+        {% csrf_token %}
+        <input type="hidden" name="room_name" id="room_name" width="100px" value="{{request.user.id}}"/>
+        <input type="hidden" name="room_user_send" id="room_user_send" width="100px" value="{{i.id}}"/>
+        <input type="hidden" name="username" id="username" width="100px"  value={{i.user}}/>
+        <button type="submit"  class="" style="border-style: none; background-color: transparent; cursor: pointer;"> <span class="rightbarUsername">{{i.user}}</span></button>
+    </form>
+ </li>
+{% endfor %}
+
+
+
+
+<!-- 
+<div class="container">
+    <form class="ui form" id="post-form" method="POST" action="checkview">
+        {% csrf_token %}
+        <label>Room Name</label>
+        <input type="text" name="room_name" id="room_name" width="100px" />
+        <label>Username</label>
+        <input type="text" name="username" id="username" width="100px" />
+        <input type="submit" value="Enter Room" class="ui button primary">
+    </form>
+</div> -->
+
+
+{% endblock content %}

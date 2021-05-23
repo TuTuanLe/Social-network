@@ -1,0 +1,48 @@
+{% url 'home-view' as path_to_home %}
+{% url 'posts:main-post-view' as path_to_posts %}
+{% url 'profiles:my-profile-view' as path_to_my_profile %}
+{% url 'profiles:my-invites-view' as path_to_my_invites %}
+{% url 'profiles:invite-profiles-view' as path_to_invites %}
+{% url 'profiles:all-profiles-view' as path_to_all_profiles %}
+
+<div class="rightbar">
+    <div class="rightbarWrapper">
+       <p class="birthdayTitle">Birthdays</p>
+       <div class="birthdayContainer">
+          <img src="https://image.spreadshirtmedia.net/image-server/v1/mp/compositions/T235A306MPA4253PT17X10Y3D16700682FS10887Cx9DC8D9:xFFFFFF/views/1,width=550,height=550,appearanceId=306,backgroundColor=1B6FA8,noPt=true/happy-birthday-to-me-baby-bib.jpg" alt="" class="birthdayImg"/>
+          <span class="birthdayText"> <b>Minh Hieu's</b> birthday is today.</span>
+       </div>
+       <hr class="rightbarHr"/>
+        <div class="infomation">
+           <span class="titleContact"> Contacts</span>
+           <div class="inf">
+                <i class="plus square outline icon large" style="color: red;" ></i>
+           </div>
+           <div class="inf">
+                <i class="search outline icon large" ></i>
+           </div>
+           <div class="inf">
+                <i class="code outline icon large" style="color: green;" ></i>
+           </div>
+          
+        </div>
+        <ul class="rightbarFriendList">
+       
+                 <!-- <li class="rightbarFriend"></li>
+                    <div class="rightbarProfileImgContainer">
+                       <img 
+                       class="rightProfileImg"
+                          src={p.profilePicture}
+                          alt=""
+                       />
+                       <span class="rightbarOnline"></span>
+                    </div>
+                    <span class="rightbarUsername">{{request.user}}</span>
+                 </li> -->
+
+          
+    
+        </ul>
+
+    </div>
+ </div>

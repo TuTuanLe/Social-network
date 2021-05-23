@@ -1,0 +1,80 @@
+{% url 'home-view' as path_to_home %}
+{% url 'chat:home' as path_to_chat %}
+{% url 'posts:main-post-view' as path_to_posts %}
+{% url 'profiles:my-profile-view' as path_to_my_profile %}
+{% url 'profiles:my-invites-view' as path_to_my_invites %}
+{% url 'profiles:invite-profiles-view' as path_to_invites %}
+{% url 'profiles:all-profiles-view' as path_to_all_profiles %}
+
+
+<div class="header">
+    <div class="header_left">
+        <img src="https://tuoitre.uit.edu.vn/wp-content/uploads/2015/07/logo-uit.png" alt="" class="logoUIT">
+       <div class="header_input">
+           <i class="search icon large"></i>
+           <input type='text' placeholder="Search"/>
+       </div>
+   </div>
+
+
+    <div class="header_middle"> 
+       <div class="header_option">
+        <a href="{{path_to_posts}}" class="{% if request.path == path_to_posts %}active{% endif %} item">
+            <i class="home outline icon large"></i>
+        </a>
+             
+       </div>
+       <div class="header_option ">
+        <a href="{{path_to_all_profiles}}" class="{% if request.path == path_to_all_profiles %}active{% endif %} item">
+            <i class="desktop outline icon large"></i>
+        </a>
+             
+       </div>
+       <div class="header_option">
+        <a href="{{path_to_invites}}" class="{% if request.path == path_to_invites %}active{% endif %} item">
+            <i class="heart outline icon large"></i>
+        </a>
+           
+       </div>
+       
+       <div class="header_option">
+        <a href="{{path_to_my_invites}}" class="{% if request.path == path_to_my_invites %}active{% endif %} item">
+            <i class="bell outline icon large"></i> &nbsp; <span class="messageFriend">{{invites_num}}</span> 
+        </a>
+             
+       </div>
+       <div class="header_option">
+            <a href="http://127.0.0.1:8000/chat" class="{% if request.path == path_to_chat %}active{% endif %} item">
+                <i class="comment outline icon large"></i>
+            </a>
+        </div>
+    </div>
+    <div class="header_right"> 
+        <div class="header_info">
+        <a href="{{path_to_my_profile}}" class="{% if request.path == path_to_my_profile %}active{% endif %} item">
+           <img src={{picture.url}} class="ui avatar image">&nbsp;
+           <b>{{ request.user }}</b>
+        </a>
+        
+        </div>
+      <div class="header_option2">
+        <!-- <i class="comment outline icon large"></i> -->
+     </div>
+     <div class="header_option2">
+        <a href="{% url 'account_login' %}"> <i class="bell outline icon large"></i></a>
+       
+     </div>
+     <div class="header_option2">
+         <a href="{% url 'account_logout' %}"><i class="sort down icon large"></i></a>
+     </div>
+       
+       
+       
+        
+        
+      
+   </div>
+
+</div>
+       
+

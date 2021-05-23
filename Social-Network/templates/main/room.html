@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<script   src="https://code.jquery.com/jquery-3.1.1.min.js"   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="   crossorigin="anonymous"></script>
+
+<style>
+  /* body {
+    margin: 0 auto;
+    max-width: 800px;
+    padding: 0 20px;
+  } */
+  
+  .containerMessage {
+    border: 2px solid #dedede;
+    background-color: #3859D5;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    -webkit-box-shadow: 0px 0px 7px -1px rgba(0,0,0,0.36); 
+    box-shadow: 0px 0px 7px -1px rgba(0,0,0,0.36);
+  }
+  
+  .darker {
+    border-color: #ccc;
+    background-color: #ddd;
+  }
+  
+  .containerMessage::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+  
+  .containerMessage img {
+    float: left;
+    max-width: 30px;
+    width: 100%;
+    margin-right: 20px;
+    border-radius: 50%;
+  }
+  
+  .containerMessage img.right {
+    float: right;
+    margin-left: 20px;
+    margin-right:0;
+  }
+ 
+  
+  .time-right {
+    float: right;
+    color: #aaa;
+  }
+  
+  .time-left {
+    float: left;
+    color: #999;
+  }
+   /* .nameuser{
+    margin-left: 61% ;
+  }
+  .contentuser{
+    float: right;
+  }  */
+  .themeform{
+    display: flex;
+    width: 100%;
+  }
+  .inputSend{
+    border-radius: 10px;
+    -webkit-box-shadow: 0px 0px 7px -1px rgba(0,0,0,0.36); 
+    box-shadow: 0px 0px 7px -1px rgba(0,0,0,0.36);
+    
+    height: 30px;
+    width: 100%;
+    border-color: transparent;
+    
+  }
+  .topchat{
+    margin-top: 10px;
+    width: 100%;
+    height: 60px;
+    border-radius: 10px;
+    -webkit-box-shadow: 0px 0px 7px -1px rgba(0,0,0,0.36); 
+    box-shadow: 0px 0px 7px -1px rgba(0,0,0,0.36);
+    background-color: #FFFFFF;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  </style>
+<div class="topchat">
+  <p>{{username}} chat mesenge</p>
+
+</div>
+
+<div id="display">
+</div>
+
+<script>
+$(document).ready(function(){
+
+setInterval(function(){
+    $.ajax({
+        type: 'GET',
+        url : "/chat/getMessages/{{room}}/",
+        success: function(response){
+            console.log(response);
+            $("#display").empty();
+            for (var key in response.messages)
+            {
+              if (response.messages[key].user_id == response.user_id ){
+                var temp="<div class='containerMessage'> <img src='"+response.messages[key].imgUrl+"' alt='Avatar' style='width:100%;'> <p style='color:#fff'>"+response.messages[key].value+"</p><span class='time-right'>"+response.messages[key].date+"</span></div>";
+              }
+              else{
+                var temp="<div class='containerMessage darker'> <img src='"+response.messages[key].imgUrl+"' alt='Avatar' style='width:100%;' class='right'> <p class='contentuser' style='float:right;'>"+response.messages[key].value+"</p><span class='time-left'>"+response.messages[key].date+"</span></div>";
+
+              }
+              
+              $("#display").append(temp);
+            }
+        },
+        error: function(response){
+            alert('An error occured')
+        }
+    });
+},1000);
+})
+</script>
+
+
+<div class="container">
+    <form id="post-form" class="themeform">
+        {% csrf_token %}
+        <input type="hidden" name="username" id="username" value="{{username}}"/>
+        <input type="hidden" name="room_id" id="room_id" value="{{room_details.id}}"/>
+        <input type="text" name="message" id="message" class="inputSend" />
+        <button type="submit"><i class="angle double right icon"></i> </button>
+    </form>
+</div>
+
+
+
+<script type="text/javascript">
+  $(document).on('submit','#post-form',function(e){
+    e.preventDefault();
+
+    $.ajax({
+      type:'POST',
+      url:'/chat/send',
+      data:{
+          username:$('#username').val(),
+          room_id:$('#room_id').val(),
+          message:$('#message').val(),
+        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+      },
+      success: function(data){
+        //  alert(data)
+      },
+      error: function (data) {
+        alert('fail')
+      }
+    });
+    document.getElementById('message').value = ''
+  });
+</script>
+
+
+{% endblock content %}

@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+
+{% block title %}main page{% endblock title %}
+
+{% block content %}
+
+<div class="share">
+    <div class="shareWrapper">
+        <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="shareTop">
+            <img src={{picture.url}} alt="" class="shareProfileImg"/>
+            {{p_form}}
+
+        </div>
+       
+       
+            <hr class="shareHr"/>
+            <div class="shareBottom">
+                
+                <div class="shareOption">
+                    <button type='button'  class="ui button "> <i class="plus square outline icon large" style="color: red;" ></i>   Live video</button>
+                 
+                </div>
+                <div class="shareOption">
+                <button type='button'  class="ui button "> <i class="smile outline icon large" style="color: sandybrown;"></i>   Feeling/Activity</button>
+           
+                 </div>
+                <div class="shareOption">
+                     <button type='submit' name="submit_p_form" class="ui button "> <i class="external alternate  icon large" style="color: seagreen;"></i>   Share</button>
+                </div>
+            </div>
+
+
+       
+        </form>
+    </div>
+</div>
+
+{% for obj in qs %}
+
+<div class="post">
+    <div class="postWrapper">
+        <div class="postTop">
+            <div class="postTopLeft">
+                <img class="postProfileImg" src={{obj.author.avatar.url}} alt="" />
+                <div class="postUsername">
+                    <span > {{ obj.author.user }}</span>
+                    <br/>
+                    <span class="postDate">{{ obj.created|timesince}} ago </span>
+                </div>
+                
+            </div>
+            <div class="postTopRight">
+                <div class="row">
+                    {% ifequal request.user obj.author.user %}
+                        <a href="{% url 'posts:post-update' obj.pk %}"><button class="ui button bwhite-lg ">Update</button></a>
+                        <a href="{% url 'posts:post-delete' obj.pk %}"><button class="ui button bwhite-lg ">Delete</button></a>
+                    {% endifequal %}
+                </div>
+            </div>
+        </div>
+        <div class="postCenter">
+            <span class="postTextg"> {{ obj.content }}</span>
+            
+            <span class="postTextScrip"></span>
+            {% if obj.image %}
+                <img src={{obj.image.url}} alt="" class="postImg"/> 
+            {% endif %}
+           
+        </div>
+        <div class="postBottom">
+            <div class="postBottomLeft">
+                <i class="thumbs up outline icon large" style="color: royalblue;"> </i>
+                <span class="postLikeCounter like-count{{obj.id}}"> {{obj.num_likes}} people like it </span>
+            </div>
+            <div class="postBottomRight">
+                <span class="postCommentText "> {{ obj.num_comments }} comments </span>
+            </div>
+        </div>
+        
+        <hr class="postHr"/>
+      
+        <div class="postUnderBottom">
+            <div class="postUnderBottomLeft">
+                <i class="hand point right outline  icon large" style="color:blue;"></i> 
+                <!-- <span class="postShow"> Like</span> -->
+                <form action="{% url 'posts:like-post-view' %}" method="POST" class='like-form' id='{{obj.id}}'>
+                    {% csrf_token %}
+                    <input type="hidden" name="post_id" value={{obj.id}}>
+                    
+                        <button type="submit" class=" like-btn{{obj.id}}" style="border:none; background-color: transparent; cursor: pointer;">
+                            {% if profile not in obj.liked.all %}
+                                Like
+                            {% else %}
+                                Unlike
+                            {% endif %}
+                        </button>
+            
+                </form>
+            </div>
+            <div class="postUnderBottomCenter ">
+                <i class="comments outline icon large" ></i>
+                <span class="cmt_btn postShow " style="cursor:pointer "> Comment</span>
+            </div>
+            <div class="postUnderBottomRight">
+                <i class="external alternate  icon large" style="color: seagreen;"></i> 
+                <span class="postShow"> Share</span>
+            </div>
+            
+        </div>
+        <div class="extra content">
+         
+            <span class="cmt_btn postShow " style="cursor:pointer; top: 0px; " > Comment</span>
+            
+            
+            <div class="comment-box">
+                <hr class="postHr"/>
+                <br/>
+    
+                <form action="" method="POST"class='ui fluid form' >
+                    {% csrf_token %}
+                    
+                    <div style="display: flex; align-items: center;justify-content: center;"> 
+                        <img class="postProfileImg" src={{obj.author.avatar.url}} alt="" />
+                        <input type="hidden" name="post_id" value={{obj.id}}  >
+                        {{ c_form }}
+                        <button type="submit" name="submit_c_form" class="ui primary button ">Send</button>
+                    </div>
+                </form>
+            {% if obj.comment_set.all %}
+                {% for c in obj.comment_set.all %}
+                <div style="display: flex; align-items: center;">
+                <img class="ui avatar image" src={{c.user.avatar.url}}  style="top:-6px">
+                    <div class="ui segment mb-5" style="border-radius: 20px;">
+                       
+                        <b>  {{ c.user }}</b>
+                        <div class='mt-5'>{{ c.body }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+            
+            </div>
+
+        </div>
+        
+    </div>
+</div>
+
+
+
+{% endfor %}
+
+
+
+
+
+ 
+{% endblock content %}
+
+{% block scripts %} 
+    <script>
+        //  function sayHello() {
+        //     console.log('Hello');
+        // }
+        // setInterval(sayHello, 5000);
+        
+        $( document ).ready(function() {
+            let display = false
+            $(".cmt_btn").click(function () {
+                if (display===false) {
+                    $(this).next(".comment-box").show("slow");
+                    display=true
+                } else {
+                    $(this).next(".comment-box").hide("slow");
+                    display=false
+                }  
+            });
+
+
+            $('.like-form').submit(function(e){
+                e.preventDefault()
+                
+                const post_id = $(this).attr('id')
+                
+                const likeText = $(`.like-btn${post_id}`).text()
+                const trim = $.trim(likeText)
+                const url = $(this).attr('action')
+                
+                let res;
+                const likes = $(`.like-count${post_id}`).text()
+                const trimCount = parseInt(likes)
+                console.log(trimCount+1)
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'post_id':post_id,
+                    },
+                    success: function(response) {
+                        if(trim === 'Unlike') {
+                            $(`.like-btn${post_id}`).text('Like')
+                            res = trimCount - 1
+                        } else {
+                            $(`.like-btn${post_id}`).text('Unlike')
+                            res = trimCount + 1
+                        }
+
+                        $(`.like-count${post_id}`).text(res+ " people like it")
+                    },
+                    error: function(response) {
+                        console.log('error', response)
+                    }
+                })
+
+            })
+        });
+
+        // setInterval(function () {
+        //     $.ajax({
+        //         type:'GET',
+        //         url:"/posts/",
+        //         success: function(response) {
+        //            for(var key in response.qs){
+        //                console.log(key)
+        //            }
+                
+        //         },
+        //         error: function() {
+        //             alert('An error occured')
+        //         }
+        //     });
+        // },1000);
+
+    </script>
+{% endblock scripts %}
