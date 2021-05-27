@@ -78,12 +78,54 @@ def invite_profiles_list_view(request):
 
 @login_required
 def profiles_list_view(request):
-    user = request.user
-    qs = Profile.objects.get_all_profiles(user)
+    model = Profile
+    template_name = 'profiles/profile_list.html'
+    # context_object_name = 'qs'
 
-    context = {'qs': qs}
+    def get_queryset(self):
+        qs = Profile.objects.get_all_profiles(self.request.user)    
+        qs2 = User.objects.all()
+        qsdegree =[]
+        data =[]
+        direction=[]
+        print(data)
+        for i in qs2:
+            temp = i.id +1
+            usera = Profile.objects.get(id=temp)
+            print(temp,"  ",i.username,"  ")
+            print("\t============== list user no friends =================")
+            user_accept= Profile.objects.get_all_friend_accepted(usera.user)
+            for user_ac in user_accept:
+                print("\t\t",user_ac.id ,"  ",user_ac.user)
+                direction.append(temp)
+                direction.append(user_ac.id)
+                data.append(direction)
+                direction=[]
 
-    return render(request, 'profiles/profile_list.html', context)
+            print("\t============== list user send =======================")
+            user_send= Profile.objects.get_all_friend_send(usera.user)
+            for user_as in user_send:
+                print("\t\t",user_as.id ,"  ",user_as.user)
+                direction.append(temp)
+                direction.append(user_as.id)
+                data.append(direction)
+                direction=[]
+        
+        df=  pd.DataFrame(data)
+        print(df)
+        us_graph = nx.from_pandas_edgelist(df, source=0,target=1,create_using=nx.DiGraph)
+        degree =  nx.closeness_centrality(us_graph)
+        print('closeness_centrality ', degree)
+        for i in sorted(degree, key = degree.get, reverse=True):
+            print(i, degree[i])
+            if int(i) != int(self.request.user.id) +1:
+                qsdegree.append(Profile.objects.get(id=i))
+
+        print("2222222222222222",self.request.user.id)
+        print(qsdegree)
+        
+        # print(qs)
+        return qsdegree
 
 class ProfileDetailView(LoginRequiredMixin, DetailView):
     model = Profile
